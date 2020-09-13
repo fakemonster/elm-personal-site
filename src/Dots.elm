@@ -20,11 +20,56 @@ import Random
 import Time exposing (Posix)
 
 
+
+-- Model
+
+
+type alias Point =
+    ( Float, Float )
+
+
 type alias Dot =
     { r : Float
     , color : Color
     , pos : ( Float, Float )
     }
+
+
+type alias Config =
+    { width : Int
+    , height : Int
+    , radius : Float
+    , points : List Point
+    }
+
+
+type alias Space =
+    { colors : List Color
+    , delays : List Int
+    , limit : Int
+    }
+
+
+defaultSpace : Space
+defaultSpace =
+    { colors = []
+    , delays = []
+    , limit = 0
+    }
+
+
+init : Config -> ( Space, Cmd Msg )
+init { points } =
+    ( defaultSpace
+    , Cmd.batch
+        [ genColors (List.length points)
+        , genDelays (List.length points)
+        ]
+    )
+
+
+
+-- Rand
 
 
 randColor : Random.Generator Color
@@ -56,57 +101,14 @@ genDelays n =
     Random.generate NewDelays (Random.list n randDelay)
 
 
+
+-- Update
+
+
 type Msg
     = NewColors (List Color)
     | NewDelays (List Int)
     | Tick Posix
-
-
-toDots : Float -> List Color -> List Point -> List Dot
-toDots r =
-    List.map2 (Dot r)
-
-
-toShape : Dot -> Renderable
-toShape { pos, r, color } =
-    shapes [ fill color ] [ circle pos r ]
-
-
-type alias Point =
-    ( Float, Float )
-
-
-type alias Config =
-    { width : Int
-    , height : Int
-    , radius : Float
-    , points : List Point
-    }
-
-
-type alias Space =
-    { colors : List Color
-    , delays : List Int
-    , limit : Int
-    }
-
-
-defaultSpace : Space
-defaultSpace =
-    { colors = []
-    , delays = []
-    , limit = 1
-    }
-
-
-init : Config -> ( Space, Cmd Msg )
-init { points } =
-    ( defaultSpace
-    , Cmd.batch
-        [ genColors (List.length points)
-        , genDelays (List.length points)
-        ]
-    )
 
 
 update : Msg -> Space -> ( Space, Cmd msg )
@@ -120,6 +122,20 @@ update msg space =
 
         Tick posix ->
             ( { space | limit = space.limit + 1 }, Cmd.none )
+
+
+
+-- View
+
+
+toDots : Float -> List Color -> List Point -> List Dot
+toDots r =
+    List.map2 (Dot r)
+
+
+toShape : Dot -> Renderable
+toShape { pos, r, color } =
+    shapes [ fill color ] [ circle pos r ]
 
 
 filterOnDelay : Int -> List Int -> List a -> List a
@@ -141,25 +157,31 @@ filterOnDelay limit ds xs =
 
 
 draw : Config -> Space -> Html msg
-draw config { colors, limit, delays } =
+draw { width, height, points, radius } { colors, limit, delays } =
     let
         f =
             toFloat
 
-        { width, height, points, radius } =
-            config
-
         delayFilter =
             filterOnDelay limit delays
+
+        dots =
+            toDots (radius * 0.85) colors points
     in
     Canvas.toHtml ( width, height )
         [ id "dots" ]
         (List.concat
-            [ [ shapes [ fill Color.white ] [ rect ( 0, 0 ) (f width) (f height) ]
+            [ [ shapes
+                    [ fill Color.white ]
+                    [ rect ( 0, 0 ) (toFloat width) (toFloat height) ]
               ]
-            , List.map toShape (toDots (radius * 0.85) colors points) |> delayFilter
+            , dots |> delayFilter |> List.map toShape
             ]
         )
+
+
+
+-- Subscriptions
 
 
 subscriptions : Space -> Sub Msg

@@ -9,6 +9,10 @@ import Html.Events exposing (onInput)
 import Json.Decode as Decode exposing (Decoder, Value)
 
 
+
+-- Main
+
+
 main : Program Value Model Msg
 main =
     Browser.element
@@ -35,8 +39,29 @@ type alias Model =
     }
 
 
-defaultText =
-    "Joe"
+init : Value -> ( Model, Cmd Msg )
+init json =
+    let
+        dotConfig =
+            case Decode.decodeValue flagDecoder json of
+                Ok result ->
+                    result
+
+                Err _ ->
+                    Dots.Config 100 100 1 []
+
+        ( dotSpace, dotCmd ) =
+            Dots.init dotConfig
+    in
+    ( Model "" dotConfig { dots = dotSpace }
+    , Cmd.batch
+        [ dotCmd |> Cmd.map DotSpace
+        ]
+    )
+
+
+
+-- JSON
 
 
 flagDecoder : Decoder Dots.Config
@@ -62,35 +87,8 @@ pointDecoder =
             )
 
 
-init : Value -> ( Model, Cmd Msg )
-init json =
-    let
-        dotConfig =
-            case Decode.decodeValue flagDecoder json of
-                Ok result ->
-                    result
 
-                Err _ ->
-                    Dots.Config 100 100 1 []
-
-        ( dotSpace, dotCmd ) =
-            Dots.init dotConfig
-    in
-    ( Model "" dotConfig { dots = dotSpace }
-    , Cmd.batch
-        [ dotCmd |> Cmd.map DotSpace
-        ]
-    )
-
-
-fallback : String -> String -> String
-fallback text backup =
-    case String.isEmpty text of
-        True ->
-            backup
-
-        False ->
-            text
+-- Update
 
 
 type Msg
