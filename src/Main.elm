@@ -24,7 +24,7 @@ main =
 
 
 type alias Spaces =
-    { dots : Maybe Dots.Space
+    { dots : Dots.Space
     }
 
 
@@ -40,7 +40,7 @@ defaultText =
 
 
 defaultSpaces =
-    { dots = Nothing
+    { dots = Dots.defaultSpace
     }
 
 
@@ -78,7 +78,11 @@ init json =
                 Err _ ->
                     Dots.Config 100 100 1 []
     in
-    ( Model "" dotConfig defaultSpaces, Dots.initCmd DotSpace dotConfig )
+    ( Model "" dotConfig defaultSpaces
+    , Cmd.batch
+        [ Dots.init dotConfig |> Cmd.map DotSpace
+        ]
+    )
 
 
 fallback : String -> String -> String
@@ -93,7 +97,7 @@ fallback text backup =
 
 type Msg
     = Change String
-    | DotSpace Dots.Space
+    | DotSpace Dots.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
@@ -102,12 +106,18 @@ update msg model =
         Change text ->
             ( { model | field = text }, Cmd.none )
 
-        DotSpace space ->
+        DotSpace dotMsg ->
             let
                 oldSpaces =
                     model.spaces
+
+                oldDots =
+                    oldSpaces.dots
+
+                ( dots, cmd ) =
+                    Dots.update dotMsg oldDots
             in
-            ( { model | spaces = { oldSpaces | dots = Just space } }, Cmd.none )
+            ( { model | spaces = { oldSpaces | dots = dots } }, cmd )
 
 
 
@@ -116,14 +126,13 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
+    let
+        { dotConfig, spaces } =
+            model
+    in
     div []
         [ Header.view
-        , case model.spaces.dots of
-            Nothing ->
-                div [] []
-
-            Just space ->
-                Dots.draw model.dotConfig space
+        , Dots.draw dotConfig spaces.dots
         , canvas [ id "dots" ] []
         ]
 
@@ -133,5 +142,7 @@ view model =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions =
-    always Sub.none
+subscriptions { spaces } =
+    Sub.batch
+        [ Dots.subscriptions spaces.dots |> Sub.map DotSpace
+        ]

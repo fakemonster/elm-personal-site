@@ -1,4 +1,14 @@
-module Dots exposing (Config, DotMsg, Point, Space, draw, initCmd)
+module Dots exposing
+    ( Config
+    , Msg
+    , Point
+    , Space
+    , defaultSpace
+    , draw
+    , init
+    , subscriptions
+    , update
+    )
 
 import Browser
 import Browser.Events exposing (onAnimationFrame)
@@ -31,7 +41,7 @@ genColors msgr n =
     Random.generate msgr (Random.list n randColor)
 
 
-type DotMsg
+type Msg
     = NewColors (List Color)
 
 
@@ -62,13 +72,22 @@ type alias Space =
     }
 
 
-type alias SpaceMsgr a =
-    Space -> a
+defaultSpace : Space
+defaultSpace =
+    { colors = []
+    }
 
 
-initCmd : SpaceMsgr a -> Config -> Cmd a
-initCmd msgr { points } =
-    genColors (Space >> msgr) (List.length points)
+init : Config -> Cmd Msg
+init { points } =
+    genColors NewColors (List.length points)
+
+
+update : Msg -> Space -> ( Space, Cmd msg )
+update msg space =
+    case msg of
+        NewColors colors ->
+            ( { space | colors = colors }, Cmd.none )
 
 
 draw : Config -> Space -> Html msg
@@ -88,3 +107,8 @@ draw config { colors } =
             , List.map toShape (toDots (radius * 0.85) colors points)
             ]
         )
+
+
+subscriptions : Space -> Sub Msg
+subscriptions =
+    always Sub.none
