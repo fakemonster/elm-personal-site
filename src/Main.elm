@@ -39,11 +39,6 @@ defaultText =
     "Joe"
 
 
-defaultSpaces =
-    { dots = Dots.defaultSpace
-    }
-
-
 flagDecoder : Decoder Dots.Config
 flagDecoder =
     Decode.map4 Dots.Config
@@ -77,10 +72,13 @@ init json =
 
                 Err _ ->
                     Dots.Config 100 100 1 []
+
+        ( dotSpace, dotCmd ) =
+            Dots.init dotConfig
     in
-    ( Model "" dotConfig defaultSpaces
+    ( Model "" dotConfig { dots = dotSpace }
     , Cmd.batch
-        [ dotConfig |> Dots.init |> Cmd.map DotSpace
+        [ dotCmd |> Cmd.map DotSpace
         ]
     )
 

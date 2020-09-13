@@ -10,7 +10,7 @@ const randomInt = () =>
   Math.floor(Math.random() * (2 ** 32) - 2 ** 31)
 
 const flags = {
-  ...pixelate({ text: 'joe', width: 400 }),
+  ...pixelate({ text: 'joe', width: 500 }),
 }
 
 console.log(flags)

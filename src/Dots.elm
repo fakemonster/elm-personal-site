@@ -3,7 +3,6 @@ module Dots exposing
     , Msg
     , Point
     , Space
-    , defaultSpace
     , draw
     , init
     , subscriptions
@@ -100,12 +99,14 @@ defaultSpace =
     }
 
 
-init : Config -> Cmd Msg
+init : Config -> ( Space, Cmd Msg )
 init { points } =
-    Cmd.batch
+    ( defaultSpace
+    , Cmd.batch
         [ genColors (List.length points)
         , genDelays (List.length points)
         ]
+    )
 
 
 update : Msg -> Space -> ( Space, Cmd msg )
