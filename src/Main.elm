@@ -80,7 +80,7 @@ init json =
     in
     ( Model "" dotConfig defaultSpaces
     , Cmd.batch
-        [ Dots.init dotConfig |> Cmd.map DotSpace
+        [ dotConfig |> Dots.init |> Cmd.map DotSpace
         ]
     )
 
@@ -133,7 +133,6 @@ view model =
     div []
         [ Header.view
         , Dots.draw dotConfig spaces.dots
-        , canvas [ id "dots" ] []
         ]
 
 
@@ -144,5 +143,5 @@ view model =
 subscriptions : Model -> Sub Msg
 subscriptions { spaces } =
     Sub.batch
-        [ Dots.subscriptions spaces.dots |> Sub.map DotSpace
+        [ spaces.dots |> Dots.subscriptions |> Sub.map DotSpace
         ]
