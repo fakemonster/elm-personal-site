@@ -15,7 +15,7 @@ import Canvas exposing (..)
 import Canvas.Settings exposing (..)
 import Color exposing (Color)
 import Html exposing (Html)
-import Html.Attributes exposing (id)
+import Html.Attributes exposing (id, style)
 import Json.Decode as Decode exposing (Decoder)
 import Random
 import Time exposing (Posix)
@@ -111,7 +111,7 @@ randColor =
 
 frameLength : Int
 frameLength =
-    60
+    30
 
 
 randDelay : Random.Generator Int
@@ -204,7 +204,7 @@ draw { width, height, points, radius } { colors, limit, delays } =
             toDots (radius * 0.85) colors points
     in
     Canvas.toHtml ( width, height )
-        [ id "dots" ]
+        [ id "dots", style "position" "absolute", style "left" "0", style "top" "0" ]
         (List.concat
             [ [ bg (f width) (f height) ]
             , dots |> delayFilter |> List.map toShape
