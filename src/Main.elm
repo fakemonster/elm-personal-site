@@ -7,6 +7,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Json.Decode as Decode exposing (Decoder, Value)
+import Result
 
 
 
@@ -33,8 +34,7 @@ type alias Spaces =
 
 
 type alias Model =
-    { field : String
-    , dotConfig : Dots.Config
+    { dotConfig : Dots.Config
     , spaces : Spaces
     }
 
@@ -43,17 +43,14 @@ init : Value -> ( Model, Cmd Msg )
 init json =
     let
         dotConfig =
-            case Decode.decodeValue flagDecoder json of
-                Ok result ->
-                    result
-
-                Err _ ->
-                    Dots.Config 100 100 1 []
+            Decode.decodeValue flagDecoder json
+                |> Result.withDefault
+                    (Dots.Config 100 100 1 [])
 
         ( dotSpace, dotCmd ) =
             Dots.init dotConfig
     in
-    ( Model "" dotConfig { dots = dotSpace }
+    ( Model dotConfig { dots = dotSpace }
     , Cmd.batch
         [ dotCmd |> Cmd.map DotSpace
         ]
@@ -92,26 +89,19 @@ pointDecoder =
 
 
 type Msg
-    = Change String
-    | DotSpace Dots.Msg
+    = DotSpace Dots.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
     case msg of
-        Change text ->
-            ( { model | field = text }, Cmd.none )
-
         DotSpace dotMsg ->
             let
                 oldSpaces =
                     model.spaces
 
-                oldDots =
-                    oldSpaces.dots
-
                 ( dots, cmd ) =
-                    Dots.update dotMsg oldDots
+                    Dots.update dotMsg oldSpaces.dots
             in
             ( { model | spaces = { oldSpaces | dots = dots } }, cmd )
 
@@ -121,11 +111,7 @@ update msg model =
 
 
 view : Model -> Html Msg
-view model =
-    let
-        { dotConfig, spaces } =
-            model
-    in
+view { dotConfig, spaces } =
     div []
         [ Header.view
         , Dots.draw dotConfig spaces.dots
