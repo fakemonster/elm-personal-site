@@ -1,8 +1,8 @@
 module Dots exposing
     ( Config
     , Msg
-    , Point
     , Space
+    , decoder
     , draw
     , init
     , subscriptions
@@ -16,6 +16,7 @@ import Canvas.Settings exposing (..)
 import Color exposing (Color)
 import Html exposing (Html)
 import Html.Attributes exposing (id)
+import Json.Decode as Decode exposing (Decoder)
 import Random
 import Time exposing (Posix)
 
@@ -66,6 +67,33 @@ init { points } =
         , genDelays (List.length points)
         ]
     )
+
+
+
+-- JSON
+
+
+decoder : Decoder Config
+decoder =
+    Decode.map4 Config
+        (Decode.at [ "width" ] Decode.int)
+        (Decode.at [ "height" ] Decode.int)
+        (Decode.at [ "radius" ] Decode.float)
+        (Decode.at [ "points" ] (Decode.list pointDecoder))
+
+
+pointDecoder : Decoder Point
+pointDecoder =
+    Decode.list Decode.float
+        |> Decode.andThen
+            (\list ->
+                case list of
+                    [ x, y ] ->
+                        Decode.succeed ( x, y )
+
+                    _ ->
+                        Decode.fail "Not a pair"
+            )
 
 
 
@@ -156,6 +184,13 @@ filterOnDelay limit ds xs =
         joined
 
 
+bg : Float -> Float -> Renderable
+bg width height =
+    shapes
+        [ fill Color.white ]
+        [ rect ( 0, 0 ) width height ]
+
+
 draw : Config -> Space -> Html msg
 draw { width, height, points, radius } { colors, limit, delays } =
     let
@@ -171,10 +206,7 @@ draw { width, height, points, radius } { colors, limit, delays } =
     Canvas.toHtml ( width, height )
         [ id "dots" ]
         (List.concat
-            [ [ shapes
-                    [ fill Color.white ]
-                    [ rect ( 0, 0 ) (toFloat width) (toFloat height) ]
-              ]
+            [ [ bg (f width) (f height) ]
             , dots |> delayFilter |> List.map toShape
             ]
         )

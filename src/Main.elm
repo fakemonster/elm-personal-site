@@ -6,7 +6,7 @@ import Header
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
-import Json.Decode as Decode exposing (Decoder, Value)
+import Json.Decode as Decode exposing (Value)
 import Result
 
 
@@ -42,10 +42,13 @@ type alias Model =
 init : Value -> ( Model, Cmd Msg )
 init json =
     let
+        decoder =
+            Decode.at [ "dotConfig" ] Dots.decoder
+
         dotConfig =
-            Decode.decodeValue flagDecoder json
-                |> Result.withDefault
-                    (Dots.Config 100 100 1 [])
+            json
+                |> Decode.decodeValue decoder
+                |> Result.withDefault (Dots.Config 100 100 1 [])
 
         ( dotSpace, dotCmd ) =
             Dots.init dotConfig
@@ -55,33 +58,6 @@ init json =
         [ dotCmd |> Cmd.map DotSpace
         ]
     )
-
-
-
--- JSON
-
-
-flagDecoder : Decoder Dots.Config
-flagDecoder =
-    Decode.map4 Dots.Config
-        (Decode.at [ "width" ] Decode.int)
-        (Decode.at [ "height" ] Decode.int)
-        (Decode.at [ "radius" ] Decode.float)
-        (Decode.at [ "points" ] (Decode.list pointDecoder))
-
-
-pointDecoder : Decoder Dots.Point
-pointDecoder =
-    Decode.list Decode.float
-        |> Decode.andThen
-            (\list ->
-                case list of
-                    [ x, y ] ->
-                        Decode.succeed ( x, y )
-
-                    _ ->
-                        Decode.fail "Not a pair"
-            )
 
 
 
