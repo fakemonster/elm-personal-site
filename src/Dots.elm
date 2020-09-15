@@ -15,7 +15,7 @@ import Canvas exposing (..)
 import Canvas.Settings exposing (..)
 import Color exposing (Color)
 import Html exposing (Html)
-import Html.Attributes exposing (id, style)
+import Html.Attributes exposing (class, id, style)
 import Json.Decode as Decode exposing (Decoder)
 import Random
 import Time exposing (Posix)
@@ -48,23 +48,20 @@ type alias Space =
     { colors : List Color
     , delays : List Int
     , limit : Int
-    }
-
-
-defaultSpace : Space
-defaultSpace =
-    { colors = []
-    , delays = []
-    , limit = 0
+    , config : Config
     }
 
 
 init : Config -> ( Space, Cmd Msg )
-init { points } =
-    ( defaultSpace
+init config =
+    ( { colors = []
+      , delays = []
+      , limit = 0
+      , config = config
+      }
     , Cmd.batch
-        [ genColors (List.length points)
-        , genDelays (List.length points)
+        [ genColors (List.length config.points)
+        , genDelays (List.length config.points)
         ]
     )
 
@@ -111,7 +108,7 @@ randColor =
 
 frameLength : Int
 frameLength =
-    30
+    10
 
 
 randDelay : Random.Generator Int
@@ -191,9 +188,12 @@ bg width height =
         [ rect ( 0, 0 ) width height ]
 
 
-draw : Config -> Space -> Html msg
-draw { width, height, points, radius } { colors, limit, delays } =
+draw : Space -> Html msg
+draw { config, colors, limit, delays } =
     let
+        { width, height, points, radius } =
+            config
+
         f =
             toFloat
 
@@ -204,7 +204,12 @@ draw { width, height, points, radius } { colors, limit, delays } =
             toDots (radius * 0.85) colors points
     in
     Canvas.toHtml ( width, height )
-        [ id "dots", style "position" "absolute", style "left" "0", style "top" "0" ]
+        [ id "dots"
+        , class "absolute"
+        , style "top" "-1px"
+        , style "left" "-1px"
+        , style "pointer-events" "none"
+        ]
         (List.concat
             [ [ bg (f width) (f height) ]
             , dots |> delayFilter |> List.map toShape

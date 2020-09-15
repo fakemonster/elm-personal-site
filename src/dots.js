@@ -29,6 +29,7 @@ const getPoints = (ctx, freq) => {
 export const pixelate = ({
   text,
   width,
+  resolution = 3,
   scale = 0.9, // text proportion to canvas
 }) => {
   const canvas = document.createElement('canvas')
@@ -52,7 +53,7 @@ export const pixelate = ({
 
   ctx.fillText(text, width / 2, height / 2)
 
-  const freq = Math.floor(Math.sqrt(width / 3)) || 1
+  const freq = Math.floor(Math.sqrt(width / resolution)) || 1
   const points = getPoints(ctx, freq)
   ctx.clearRect(0, 0, width, height)
   return { points, radius: freq / 2, width, height }

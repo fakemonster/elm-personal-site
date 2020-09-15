@@ -34,8 +34,7 @@ type alias Spaces =
 
 
 type alias Model =
-    { dotConfig : Dots.Config
-    , spaces : Spaces
+    { spaces : Spaces
     }
 
 
@@ -45,15 +44,13 @@ init json =
         decoder =
             Decode.at [ "dotConfig" ] Dots.decoder
 
-        dotConfig =
+        ( dotSpace, dotCmd ) =
             json
                 |> Decode.decodeValue decoder
-                |> Result.withDefault (Dots.Config 100 100 1 [])
-
-        ( dotSpace, dotCmd ) =
-            Dots.init dotConfig
+                |> Result.withDefault (Dots.Config 1 1 1 [])
+                |> Dots.init
     in
-    ( Model dotConfig { dots = dotSpace }
+    ( Model { dots = dotSpace }
     , Cmd.batch
         [ dotCmd |> Cmd.map DotSpace
         ]
@@ -87,10 +84,13 @@ update msg model =
 
 
 view : Model -> Html Msg
-view { dotConfig, spaces } =
+view { spaces } =
     div []
         [ Header.view
-        , Dots.draw dotConfig spaces.dots
+        , div [ class "absolute left-0 top-0 ml3 mt3" ]
+            [ div [ class "relative" ]
+                [ Dots.draw spaces.dots ]
+            ]
         ]
 
 

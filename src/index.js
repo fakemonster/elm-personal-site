@@ -6,14 +6,13 @@ import { pixelate } from './dots'
 
 const canvas = document.getElementById('measure-canvas')
 
-const randomInt = () =>
-  Math.floor(Math.random() * (2 ** 32) - 2 ** 31)
-
 const flags = {
-  dotConfig: pixelate({ text: 'joe thel', width: 200 }),
+  dotConfig: pixelate({
+    text: 'joe thel',
+    width: 150,
+    resolution: 3,
+  }),
 }
-
-console.log(flags)
 
 Elm.Main.init({
   node: document.getElementById('root'),
