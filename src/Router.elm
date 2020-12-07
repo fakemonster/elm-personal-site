@@ -5,11 +5,14 @@ import Page.About
 import Page.NotFound
 
 
-route : String -> Html msg
+route : String -> ( Maybe String, Html msg )
 route path =
     case path of
         "/about" ->
-            Page.About.view
+            ( Just "About", Page.About.view )
+
+        "/" ->
+            ( Nothing, text "" )
 
         _ ->
-            Page.NotFound.view
+            ( Nothing, Page.NotFound.view )

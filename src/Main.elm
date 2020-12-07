@@ -1,27 +1,31 @@
 module Main exposing (..)
 
 import Browser
+import Browser.Navigation as Navigation
 import Dots
 import Header
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
-import Json.Decode as Decode exposing (Value)
+import Json.Decode as Decode
 import Result
 import Router
+import Url
 
 
 
 -- Main
 
 
-main : Program Value Model Msg
+main : Program Decode.Value Model Msg
 main =
-    Browser.element
+    Browser.application
         { init = init
         , update = update
-        , view = view
+        , view = wrappedView
         , subscriptions = subscriptions
+        , onUrlChange = ChangedUrl
+        , onUrlRequest = ClickedLink
         }
 
 
@@ -36,11 +40,12 @@ type alias Spaces =
 
 type alias Model =
     { spaces : Spaces
+    , path : String
     }
 
 
-init : Value -> ( Model, Cmd Msg )
-init json =
+init : Decode.Value -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
+init json { path } _ =
     let
         decoder =
             Decode.at [ "dotConfig" ] Dots.decoder
@@ -51,7 +56,7 @@ init json =
                 |> Result.withDefault (Dots.Config 1 1 1 [])
                 |> Dots.init
     in
-    ( Model { dots = dotSpace }
+    ( Model { dots = dotSpace } path
     , Cmd.batch
         [ dotCmd |> Cmd.map DotSpace
         ]
@@ -64,10 +69,16 @@ init json =
 
 type Msg
     = DotSpace Dots.Msg
+    | ChangedUrl Url.Url
+    | ClickedLink Browser.UrlRequest
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
+    let
+        setPath url =
+            ( { model | path = url.path }, Cmd.none )
+    in
     case msg of
         DotSpace dotMsg ->
             let
@@ -79,13 +90,24 @@ update msg model =
             in
             ( { model | spaces = { oldSpaces | dots = dots } }, cmd )
 
+        ChangedUrl url ->
+            setPath url
+
+        ClickedLink request ->
+            case request of
+                Browser.Internal url ->
+                    setPath url
+
+                _ ->
+                    ( model, Cmd.none )
+
 
 
 -- View
 
 
-view : Model -> Html Msg
-view { spaces } =
+view : Model -> Html Msg -> Html Msg
+view { spaces } page =
     div []
         [ Header.view
         , div [ class "absolute left-0 top-0 ml3 mt3" ]
@@ -94,8 +116,19 @@ view { spaces } =
             ]
         , div
             []
-            [ Router.route "/about" ]
+            [ page ]
         ]
+
+
+wrappedView : Model -> Browser.Document Msg
+wrappedView model =
+    let
+        ( routerTitle, page ) =
+            Router.route model.path
+    in
+    { title = Maybe.withDefault "Joe Thel" routerTitle
+    , body = [ view model page ]
+    }
 
 
 
