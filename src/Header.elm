@@ -1,46 +1,69 @@
 module Header exposing (view)
 
-import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Link
 
 
 
 -- VIEW
 
 
-link : String -> String -> Html msg
-link url textChild =
-    a
-        [ href url
-        , rel "noopener nofollow"
-        , class "pa1"
-        ]
-        [ text textChild ]
+logo =
+    Link.internal
+        { url = "/"
+        , child =
+            h1
+                [ class "ma0 white"
+                , style "font-size" "2rem"
+                ]
+                [ text "joe thel" ]
+        , attrs =
+            [ class "link black"
+            , href "/"
+            ]
+        }
 
 
-header =
-    a
-        [ class "link black"
-        , href "/"
+flexList : Attribute msg
+flexList =
+    class "list flex ma0 pl0"
+
+
+pages =
+    ul
+        [ flexList
+        , class "f6 link"
         ]
-        [ h1 [ class "ma0", style "font-size" "2rem" ] [ text "joe thel" ]
+        [ Link.page "about"
         ]
 
 
 links =
     ul
-        [ class "list flex ma0 pl0"
+        [ flexList
+        , class "f6"
         ]
-        [ link "https://github.com/fakemonster" "github"
-        , link "https://linkedin.com/in/joe-thel" "linkedin"
-        , link "/contact" "contact"
+        [ Link.external
+            { url = "https://github.com/fakemonster"
+            , child = text "github"
+            , attrs = []
+            }
+        , Link.external
+            { url = "https://linkedin.com/in/joe-thel"
+            , child = text "linkedin"
+            , attrs = []
+            }
+        , Link.page "contact"
         ]
 
 
 view : Html msg
 view =
-    div [ class "pa3 mb3 flex justify-between items-center" ]
-        [ header
+    div
+        [ class "header pa3 mb3 flex justify-between items-center"
+        ]
+        [ logo
+        , pages
         , links
         ]
