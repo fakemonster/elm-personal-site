@@ -101,9 +101,9 @@ randColor : Random.Generator Color
 randColor =
     Random.map4 Color.hsla
         (Random.float 0.45 0.8)
-        (Random.float 0.5 0.7)
+        (Random.float 0.7 0.85)
         (Random.float 0.45 0.75)
-        (Random.float 0.5 0.75)
+        (Random.float 0.7 0.85)
 
 
 frameLength : Int
