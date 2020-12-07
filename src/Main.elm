@@ -8,6 +8,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 import Json.Decode as Decode exposing (Value)
 import Result
+import Router
 
 
 
@@ -91,6 +92,9 @@ view { spaces } =
             [ div [ class "relative" ]
                 [ Dots.draw spaces.dots ]
             ]
+        , div
+            []
+            [ Router.route "/about" ]
         ]
 
 
