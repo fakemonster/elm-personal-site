@@ -28,3 +28,7 @@ img {
 .header {
   border-bottom: 3px solid #eef;
 }
+
+h2 {
+  text-align: right;
+}

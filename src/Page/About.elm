@@ -1,10 +1,20 @@
-module Page.About exposing (view)
+module Page.About exposing (content)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Markdown
+
+
+content : String
+content =
+    """
+## about
+
+Hey it's Joe!
+"""
 
 
 view : Html msg
 view =
-    div [ class "tl pt4 pb4 pl3 pr3" ]
-        [ text "Hey it's Joe!" ]
+    div [ class "tl pb4 pl3 pr3" ]
+        [ Markdown.toHtml [] content ]
