@@ -41,11 +41,12 @@ type alias Spaces =
 type alias Model =
     { spaces : Spaces
     , path : String
+    , key : Navigation.Key
     }
 
 
 init : Decode.Value -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
-init json { path } _ =
+init json { path } key =
     let
         decoder =
             Decode.at [ "dotConfig" ] Dots.decoder
@@ -56,7 +57,7 @@ init json { path } _ =
                 |> Result.withDefault (Dots.Config 1 1 1 [])
                 |> Dots.init
     in
-    ( Model { dots = dotSpace } path
+    ( Model { dots = dotSpace } path key
     , Cmd.batch
         [ dotCmd |> Cmd.map DotSpace
         ]
@@ -96,7 +97,7 @@ update msg model =
         ClickedLink request ->
             case request of
                 Browser.Internal url ->
-                    setPath url
+                    ( model, Navigation.pushUrl model.key url.path )
 
                 _ ->
                     ( model, Cmd.none )
