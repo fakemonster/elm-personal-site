@@ -43,6 +43,12 @@ type alias Spaces =
     }
 
 
+type alias SpaceConfig =
+    { dots : Dots.Config
+    , mainDots : Dots.Config
+    }
+
+
 type alias Model =
     { spaces : Spaces
     , path : String
@@ -50,28 +56,54 @@ type alias Model =
     }
 
 
-initDotSpace : String -> Decode.Value -> ( Dots.Space, Cmd Dots.Msg )
-initDotSpace field json =
+decodeDotConfig : String -> Decode.Value -> Dots.Config
+decodeDotConfig field json =
     json
         |> Decode.decodeValue (Decode.at [ field ] Dots.decoder)
         |> Result.withDefault Dots.defaultConfig
-        |> Dots.init
+
+
+getConfig : Spaces -> SpaceConfig
+getConfig { dots, mainDots } =
+    { dots = dots.config
+    , mainDots = mainDots.config
+    }
+
+
+initSpaces : SpaceConfig -> ( Spaces, Cmd Msg )
+initSpaces { dots, mainDots } =
+    let
+        ( dotSpace, dotCmd ) =
+            Dots.init dots
+
+        ( mainDotSpace, mainDotCmd ) =
+            Dots.init mainDots
+    in
+    ( Spaces dotSpace mainDotSpace
+    , Cmd.batch
+        [ dotCmd |> Cmd.map DotSpace
+        , mainDotCmd |> Cmd.map MainDotSpace
+        ]
+    )
 
 
 init : Decode.Value -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
 init json { path } key =
     let
-        ( dotSpace, dotCmd ) =
-            initDotSpace "dotConfig" json
+        dotConfig =
+            decodeDotConfig "dotConfig" json
 
-        ( mainDotSpace, mainDotCmd ) =
-            initDotSpace "mainDotConfig" json
+        mainDotConfig =
+            decodeDotConfig "mainDotConfig" json
+
+        initConfig =
+            SpaceConfig dotConfig mainDotConfig
+
+        ( spaces, cmd ) =
+            initSpaces initConfig
     in
-    ( Model { dots = dotSpace, mainDots = mainDotSpace } path key
-    , Cmd.batch
-        [ dotCmd |> Cmd.map DotSpace
-        , mainDotCmd |> Cmd.map MainDotSpace
-        ]
+    ( Model spaces path key
+    , cmd
     )
 
 
@@ -86,12 +118,8 @@ type Msg
     | ClickedLink Browser.UrlRequest
 
 
-update : Msg -> Model -> ( Model, Cmd msg )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    let
-        setPath url =
-            ( { model | path = url.path }, Cmd.none )
-    in
     case msg of
         DotSpace dotMsg ->
             let
@@ -114,7 +142,11 @@ update msg model =
             ( { model | spaces = { oldSpaces | mainDots = mainDots } }, cmd )
 
         ChangedUrl url ->
-            setPath url
+            let
+                ( spaces, cmd ) =
+                    initSpaces (getConfig model.spaces)
+            in
+            ( { model | path = url.path, spaces = spaces }, cmd )
 
         ClickedLink request ->
             case request of
