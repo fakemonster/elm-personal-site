@@ -108,7 +108,7 @@ randColor =
 
 frameLength : Int
 frameLength =
-    10
+    100
 
 
 randDelay : Random.Generator Int
@@ -188,8 +188,8 @@ bg width height =
         [ rect ( 0, 0 ) width height ]
 
 
-draw : Space -> Html msg
-draw { config, colors, limit, delays } =
+draw : Space -> List (Html.Attribute msg) -> Html msg
+draw { config, colors, limit, delays } attrs =
     let
         { width, height, points, radius } =
             config
@@ -204,12 +204,15 @@ draw { config, colors, limit, delays } =
             toDots (radius * 0.85) colors points
     in
     Canvas.toHtml ( width, height )
-        [ id "dots"
-        , class "absolute"
-        , style "top" "-1px"
-        , style "left" "-1px"
-        , style "pointer-events" "none"
-        ]
+        (List.concat
+            [ [ id "dots"
+              , style "top" "-1px"
+              , style "left" "-1px"
+              , style "pointer-events" "none"
+              ]
+            , attrs
+            ]
+        )
         (List.concat
             [ [ bg (f width) (f height) ]
             , dots |> delayFilter |> List.map toShape

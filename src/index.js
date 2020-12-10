@@ -12,6 +12,11 @@ const flags = {
     width: 150,
     resolution: 3,
   }),
+  mainDotConfig: pixelate({
+    text: 'joe',
+    width: 600,
+    resolution: 15,
+  }),
 }
 
 Elm.Main.init({

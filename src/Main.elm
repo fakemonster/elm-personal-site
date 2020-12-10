@@ -39,6 +39,7 @@ main =
 
 type alias Spaces =
     { dots : Dots.Space
+    , mainDots : Dots.Space
     }
 
 
@@ -55,15 +56,25 @@ init json { path } key =
         decoder =
             Decode.at [ "dotConfig" ] Dots.decoder
 
+        mainDecoder =
+            Decode.at [ "mainDotConfig" ] Dots.decoder
+
         ( dotSpace, dotCmd ) =
             json
                 |> Decode.decodeValue decoder
                 |> Result.withDefault (Dots.Config 1 1 1 [])
                 |> Dots.init
+
+        ( mainDotSpace, mainDotCmd ) =
+            json
+                |> Decode.decodeValue mainDecoder
+                |> Result.withDefault (Dots.Config 1 1 1 [])
+                |> Dots.init
     in
-    ( Model { dots = dotSpace } path key
+    ( Model { dots = dotSpace, mainDots = mainDotSpace } path key
     , Cmd.batch
         [ dotCmd |> Cmd.map DotSpace
+        , mainDotCmd |> Cmd.map MainDotSpace
         ]
     )
 
@@ -74,6 +85,7 @@ init json { path } key =
 
 type Msg
     = DotSpace Dots.Msg
+    | MainDotSpace Dots.Msg
     | ChangedUrl Url.Url
     | ClickedLink Browser.UrlRequest
 
@@ -94,6 +106,16 @@ update msg model =
                     Dots.update dotMsg oldSpaces.dots
             in
             ( { model | spaces = { oldSpaces | dots = dots } }, cmd )
+
+        MainDotSpace dotMsg ->
+            let
+                oldSpaces =
+                    model.spaces
+
+                ( mainDots, cmd ) =
+                    Dots.update dotMsg oldSpaces.mainDots
+            in
+            ( { model | spaces = { oldSpaces | mainDots = mainDots } }, cmd )
 
         ChangedUrl url ->
             setPath url
@@ -120,22 +142,22 @@ format body =
     Markdown.toHtml [ class "tl pb4 pl3 pr3" ] body
 
 
-route_ : String -> ( Maybe String, Page msg )
+route_ : String -> Page msg
 route_ path =
     case path of
         "/about" ->
-            ( Just "About", about )
+            about
 
         "/" ->
-            ( Nothing, home )
+            home
 
         _ ->
-            ( Nothing, notFound )
+            notFound
 
 
-route : String -> ( Maybe String, Html msg )
-route =
-    route_ >> Util.tupleMap ((|>) format)
+route : Model -> ( Maybe String, Html msg )
+route model =
+    route_ model.path format model
 
 
 
@@ -147,22 +169,22 @@ type alias MarkdownParser msg =
 
 
 type alias Page msg =
-    MarkdownParser msg -> Html msg
+    MarkdownParser msg -> Model -> ( Maybe String, Html msg )
 
 
 home : Page msg
-home =
-    (|>) Page.Home.content
+home _ { spaces } =
+    ( Nothing, Dots.draw spaces.mainDots [ class "center" ] )
 
 
 notFound : Page msg
-notFound =
-    (|>) Page.NotFound.content
+notFound f _ =
+    ( Nothing, f Page.NotFound.content )
 
 
 about : Page msg
-about =
-    (|>) Page.About.content
+about f _ =
+    ( Just "About", f Page.About.content )
 
 
 
@@ -175,11 +197,12 @@ view { spaces } page =
         [ Header.view
         , div [ class "absolute left-0 top-0 ml3 mt3" ]
             [ div [ class "relative" ]
-                [ Dots.draw spaces.dots ]
+                [ Dots.draw spaces.dots [ class "absolute" ] ]
             ]
         , div
             []
-            [ page ]
+            [ page
+            ]
         ]
 
 
@@ -187,7 +210,7 @@ wrappedView : Model -> Browser.Document Msg
 wrappedView model =
     let
         ( routerTitle, page ) =
-            route model.path
+            route model
 
         flipConcat x y =
             y ++ x
@@ -208,4 +231,5 @@ subscriptions : Model -> Sub Msg
 subscriptions { spaces } =
     Sub.batch
         [ spaces.dots |> Dots.subscriptions |> Sub.map DotSpace
+        , spaces.mainDots |> Dots.subscriptions |> Sub.map MainDotSpace
         ]
