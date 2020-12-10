@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Markdown
 import Page.About
+import Page.Home
 import Page.NotFound
 import Util
 
@@ -24,7 +25,7 @@ route_ path =
             ( Just "About", Page.About.content )
 
         "/" ->
-            ( Nothing, "" )
+            ( Nothing, Page.Home.content )
 
         _ ->
             ( Nothing, Page.NotFound.content )
