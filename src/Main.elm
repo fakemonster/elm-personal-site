@@ -126,8 +126,14 @@ wrappedView model =
     let
         ( routerTitle, page ) =
             Router.route model.path
+
+        flipConcat x y =
+            y ++ x
+
+        formattedTitle =
+            Maybe.map (flipConcat " | jt") routerTitle
     in
-    { title = Maybe.withDefault "Joe Thel" routerTitle
+    { title = Maybe.withDefault "joe thel" formattedTitle
     , body = [ view model page ]
     }
 
