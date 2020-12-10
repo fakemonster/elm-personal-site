@@ -3,6 +3,7 @@ module Dots exposing
     , Msg
     , Space
     , decoder
+    , defaultConfig
     , draw
     , init
     , subscriptions
@@ -41,7 +42,14 @@ type alias Config =
     , height : Int
     , radius : Float
     , points : List Point
+    , frameLength : Int
+    , cutoffPercentage : Float
     }
+
+
+defaultConfig : Config
+defaultConfig =
+    Config 1 1 1 [] 10 100
 
 
 type alias Space =
@@ -61,7 +69,7 @@ init config =
       }
     , Cmd.batch
         [ genColors (List.length config.points)
-        , genDelays (List.length config.points)
+        , genDelays (List.length config.points) config.frameLength
         ]
     )
 
@@ -72,11 +80,13 @@ init config =
 
 decoder : Decoder Config
 decoder =
-    Decode.map4 Config
+    Decode.map6 Config
         (Decode.at [ "width" ] Decode.int)
         (Decode.at [ "height" ] Decode.int)
         (Decode.at [ "radius" ] Decode.float)
         (Decode.at [ "points" ] (Decode.list pointDecoder))
+        (Decode.at [ "frameLength" ] Decode.int)
+        (Decode.at [ "cutoffPercentage" ] Decode.float)
 
 
 pointDecoder : Decoder Point
@@ -106,14 +116,9 @@ randColor =
         (Random.float 0.7 0.85)
 
 
-frameLength : Int
-frameLength =
-    100
-
-
-randDelay : Random.Generator Int
-randDelay =
-    Random.int 1 frameLength
+randDelay : Int -> Random.Generator Int
+randDelay max =
+    Random.int 1 max
 
 
 genColors : Int -> Cmd Msg
@@ -121,9 +126,9 @@ genColors n =
     Random.generate NewColors (Random.list n randColor)
 
 
-genDelays : Int -> Cmd Msg
-genDelays n =
-    Random.generate NewDelays (Random.list n randDelay)
+genDelays : Int -> Int -> Cmd Msg
+genDelays n max =
+    Random.generate NewDelays (Random.list n (randDelay max))
 
 
 
@@ -224,9 +229,14 @@ draw { config, colors, limit, delays } attrs =
 -- Subscriptions
 
 
+divide : Int -> Int -> Float
+divide x y =
+    toFloat x / toFloat y
+
+
 subscriptions : Space -> Sub Msg
-subscriptions { limit } =
-    case limit > frameLength of
+subscriptions { limit, config } =
+    case divide limit config.frameLength > (config.cutoffPercentage / 100) of
         True ->
             Sub.none
 

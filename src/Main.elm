@@ -50,26 +50,22 @@ type alias Model =
     }
 
 
+initDotSpace : String -> Decode.Value -> ( Dots.Space, Cmd Dots.Msg )
+initDotSpace field json =
+    json
+        |> Decode.decodeValue (Decode.at [ field ] Dots.decoder)
+        |> Result.withDefault Dots.defaultConfig
+        |> Dots.init
+
+
 init : Decode.Value -> Url.Url -> Navigation.Key -> ( Model, Cmd Msg )
 init json { path } key =
     let
-        decoder =
-            Decode.at [ "dotConfig" ] Dots.decoder
-
-        mainDecoder =
-            Decode.at [ "mainDotConfig" ] Dots.decoder
-
         ( dotSpace, dotCmd ) =
-            json
-                |> Decode.decodeValue decoder
-                |> Result.withDefault (Dots.Config 1 1 1 [])
-                |> Dots.init
+            initDotSpace "dotConfig" json
 
         ( mainDotSpace, mainDotCmd ) =
-            json
-                |> Decode.decodeValue mainDecoder
-                |> Result.withDefault (Dots.Config 1 1 1 [])
-                |> Dots.init
+            initDotSpace "mainDotConfig" json
     in
     ( Model { dots = dotSpace, mainDots = mainDotSpace } path key
     , Cmd.batch

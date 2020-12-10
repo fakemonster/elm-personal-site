@@ -7,16 +7,24 @@ import { pixelate } from './dots'
 const canvas = document.getElementById('measure-canvas')
 
 const flags = {
-  dotConfig: pixelate({
-    text: 'joe thel',
-    width: 150,
-    resolution: 3,
-  }),
-  mainDotConfig: pixelate({
-    text: 'joe',
-    width: 600,
-    resolution: 15,
-  }),
+  dotConfig: {
+    ...pixelate({
+      text: 'joe thel',
+      width: 150,
+      resolution: 3,
+    }),
+    frameLength: 10,
+    cutoffPercentage: 100,
+  },
+  mainDotConfig: {
+    ...pixelate({
+      text: 'joe',
+      width: Math.floor(Math.min(window.innerWidth * 0.8, window.innerHeight * 0.9)),
+      resolution: 15,
+    }),
+    frameLength: 40,
+    cutoffPercentage: 50,
+  },
 }
 
 Elm.Main.init({
