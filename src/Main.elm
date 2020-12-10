@@ -120,22 +120,49 @@ format body =
     Markdown.toHtml [ class "tl pb4 pl3 pr3" ] body
 
 
-route_ : String -> ( Maybe String, String )
+route_ : String -> ( Maybe String, Page msg )
 route_ path =
     case path of
         "/about" ->
-            ( Just "About", Page.About.content )
+            ( Just "About", about )
 
         "/" ->
-            ( Nothing, Page.Home.content )
+            ( Nothing, home )
 
         _ ->
-            ( Nothing, Page.NotFound.content )
+            ( Nothing, notFound )
 
 
 route : String -> ( Maybe String, Html msg )
 route =
-    route_ >> Util.tupleMap format
+    route_ >> Util.tupleMap ((|>) format)
+
+
+
+-- Pages
+
+
+type alias MarkdownParser msg =
+    String -> Html msg
+
+
+type alias Page msg =
+    MarkdownParser msg -> Html msg
+
+
+home : Page msg
+home =
+    (|>) Page.Home.content
+
+
+notFound : Page msg
+notFound =
+    (|>) Page.NotFound.content
+
+
+about : Page msg
+about =
+    (|>) Page.About.content
 
 
 
