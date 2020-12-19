@@ -12,6 +12,7 @@ import Markdown
 import Page.About
 import Page.Home
 import Page.NotFound
+import Page.Works
 import Result
 import Url
 
@@ -166,7 +167,7 @@ type alias Title =
 
 format : String -> Html msg
 format body =
-    Markdown.toHtml [ class "tl pb4 pl3 pr3" ] body
+    Markdown.toHtml [ class "tl pb4 pl3 pr3 mw7 center" ] body
 
 
 route_ : String -> Page msg
@@ -174,6 +175,9 @@ route_ path =
     case path of
         "/about" ->
             about
+
+        "/works" ->
+            works
 
         "/" ->
             home
@@ -212,6 +216,11 @@ notFound f _ =
 about : Page msg
 about f _ =
     ( Just "About", f Page.About.content )
+
+
+works : Page msg
+works f _ =
+    ( Just "Works", f Page.Works.content )
 
 
 

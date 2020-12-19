@@ -22,9 +22,3 @@ This is usually in the third person, but I'm an oboist, composer, and occasional
 
 This iteration of my personal site is pretty much entirely built in [Elm](https://elm-lang.org/), excluding the text-mapping used by the homepage/logo animation. I highly recommend trying it out on something small-scale like this, which should just enough stretch your needs that you see what parts are easy and what parts are hard.
 """
-
-
-view : Html msg
-view =
-    div [ class "tl pb4 pl3 pr3" ]
-        [ Markdown.toHtml [] content ]

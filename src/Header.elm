@@ -36,6 +36,7 @@ pages =
         , class "f6 link"
         ]
         [ Link.page "about"
+        , Link.page "works"
         ]
 
 
