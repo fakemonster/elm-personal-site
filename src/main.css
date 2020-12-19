@@ -26,7 +26,15 @@ img {
 }
 
 .header {
-  border-bottom: 3px solid #eef;
+  border-bottom: 3px solid #dde;
+  display: grid;
+  grid-template-areas: "one two three";
+}
+
+@media screen and (max-width: 500px) {
+  .header {
+    grid-template-areas: "one one" "two three";
+  }
 }
 
 h2 {
@@ -51,4 +59,22 @@ blockquote {
 
 blockquote > p {
   margin: 0;
+}
+
+.logo {
+  grid-area: one;
+}
+
+.page-links {
+  grid-area: two;
+}
+
+.outer-links {
+  grid-area: three;
+}
+
+.page-links li + li, .outer-links li + li {
+  border-left: 2px solid #dde;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
 }

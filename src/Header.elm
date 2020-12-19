@@ -19,7 +19,7 @@ logo =
                 ]
                 [ text "joe thel" ]
         , attrs =
-            [ class "link black"
+            [ class "link black logo"
             , href "/"
             ]
         }
@@ -33,36 +33,40 @@ flexList =
 pages =
     ul
         [ flexList
-        , class "f6 link"
+        , class "f6 link page-links"
         ]
-        [ Link.page "about"
-        , Link.page "works"
+        [ li [] [ Link.page "about" ]
+        , li [] [ Link.page "works" ]
         ]
 
 
 links =
     ul
         [ flexList
-        , class "f6"
+        , class "f6 outer-links"
         ]
-        [ Link.external
-            { url = "https://github.com/fakemonster"
-            , child = text "github"
-            , attrs = []
-            }
-        , Link.external
-            { url = "https://linkedin.com/in/joe-thel"
-            , child = text "linkedin"
-            , attrs = []
-            }
-        , Link.page "contact"
+        [ li []
+            [ Link.external
+                { url = "https://github.com/fakemonster"
+                , child = text "github"
+                , attrs = []
+                }
+            ]
+        , li []
+            [ Link.external
+                { url = "https://linkedin.com/in/joe-thel"
+                , child = text "linkedin"
+                , attrs = []
+                }
+            ]
+        , li [] [ Link.page "contact" ]
         ]
 
 
 view : Html msg
 view =
     div
-        [ class "header pa3 mb3 flex justify-between items-center"
+        [ class "header pa3 mb3 justify-between items-center"
         ]
         [ logo
         , pages
