@@ -62,14 +62,21 @@ type alias Space =
 
 init : Config -> ( Space, Cmd Msg )
 init config =
+    let
+        { frameLength, cutoffPercentage } =
+            config
+
+        pointCount =
+            List.length config.points
+    in
     ( { colors = []
       , delays = []
       , limit = 0
       , config = config
       }
     , Cmd.batch
-        [ genColors (List.length config.points)
-        , genDelays (List.length config.points) config.frameLength
+        [ genColors pointCount
+        , genDelays pointCount frameLength ((100 - cutoffPercentage) / 100) Nothing
         ]
     )
 
@@ -116,19 +123,61 @@ randColor =
         (Random.float 0.7 0.85)
 
 
-randDelay : Int -> Random.Generator Int
-randDelay max =
-    Random.int 1 max
-
-
 genColors : Int -> Cmd Msg
 genColors n =
     Random.generate NewColors (Random.list n randColor)
 
 
-genDelays : Int -> Int -> Cmd Msg
-genDelays n max =
-    Random.generate NewDelays (Random.list n (randDelay max))
+sq a =
+    a ^ 6
+
+
+{-| Find the value to add to a probability so that it matches the given ratio
+against the sum.
+
+Random.weighted accepts any total number of weights (so, for example, 400) and
+divides by that total when applying each weight. This function is to find a new
+weight to add to match a ratio, e.g. for an initial total of 400, and a ratio of
+1/3, you would add a subsequent 200, since 200 / 600 = 1/3. This is
+represented by
+
+b / (a + b) = x
+
+where `a` is the initial total, `b` is the new weight to add, and `x` is the
+ratio. Below is the solution for b
+
+-}
+calcAddedProb : Float -> Float -> Float
+calcAddedProb a x =
+    (a * x) / (1 - x)
+
+
+genDelays : Int -> Int -> Float -> Maybe (Int -> Float) -> Cmd Msg
+genDelays len max cutoffRatio maybeSkewFunc =
+    let
+        allValid =
+            List.range 1 max
+
+        skewFunc =
+            Maybe.withDefault (toFloat >> sq) maybeSkewFunc
+
+        weights =
+            List.map skewFunc allValid
+
+        probSize =
+            List.foldr (+) 0 weights
+
+        joined =
+            List.map2 Tuple.pair weights allValid
+
+        cutoffWeighted =
+            ( calcAddedProb probSize cutoffRatio, max + 1 )
+
+        baseDelay =
+            Random.weighted cutoffWeighted joined
+    in
+    Random.list len baseDelay
+        |> Random.generate NewDelays
 
 
 
@@ -229,14 +278,9 @@ draw { config, colors, limit, delays } attrs =
 -- Subscriptions
 
 
-divide : Int -> Int -> Float
-divide x y =
-    toFloat x / toFloat y
-
-
 subscriptions : Space -> Sub Msg
 subscriptions { limit, config } =
-    case divide limit config.frameLength > (config.cutoffPercentage / 100) of
+    case limit > config.frameLength of
         True ->
             Sub.none
 

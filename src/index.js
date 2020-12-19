@@ -6,24 +6,26 @@ import { pixelate } from './dots'
 
 const canvas = document.getElementById('measure-canvas')
 
+const oneOf = opts => opts[Math.floor(Math.random() * opts.length)]
+
 const flags = {
   dotConfig: {
     ...pixelate({
       text: 'joe thel',
       width: 150,
-      resolution: 3,
+      resolution: oneOf([2, 3, 10, 20]),
     }),
     frameLength: 10,
     cutoffPercentage: 100,
   },
   mainDotConfig: {
     ...pixelate({
-      text: 'joe',
-      width: Math.floor(Math.min(window.innerWidth * 0.8, window.innerHeight * 0.9)),
+      text: 'hey',
+      width: Math.floor(Math.min(window.innerWidth * 0.8, window.innerHeight * 1.4)),
       resolution: 15,
     }),
-    frameLength: 40,
-    cutoffPercentage: 50,
+    frameLength: 80,
+    cutoffPercentage: 80,
   },
 }
 
