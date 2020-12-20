@@ -1,8 +1,8 @@
 const express = require('express')
-const path = require('path')
+const elmServe = require('./elmServe')
 
+process.env.PORT = process.env.PORT || '3000'
 const app = express()
 
-app.use(express.static(path.join(__dirname, '../build')))
-
-app.listen(process.env.PORT, () => console.info('lets do it'))
+elmServe(app)
+  .listen(process.env.PORT, () => console.info('lets do it'))
