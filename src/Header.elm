@@ -59,7 +59,6 @@ links =
                 , attrs = []
                 }
             ]
-        , li [] [ Link.page "contact" ]
         ]
 
 
