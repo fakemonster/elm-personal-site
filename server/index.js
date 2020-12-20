@@ -5,4 +5,4 @@ const app = express()
 
 app.use(express.static(path.join(__dirname, '../build')))
 
-app.listen(3000, () => console.info('lets do it'))
+app.listen(process.env.PORT, () => console.info('lets do it'))
