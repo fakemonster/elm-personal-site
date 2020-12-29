@@ -165,11 +165,6 @@ type alias Title =
     Maybe String
 
 
-format : String -> Html msg
-format body =
-    Markdown.toHtml [ class "tl pb4 pl3 pr3 mw7 center" ] body
-
-
 route_ : String -> Page msg
 route_ path =
     case path of
@@ -188,7 +183,7 @@ route_ path =
 
 route : Model -> ( Maybe String, Html msg )
 route model =
-    route_ model.path format model
+    route_ model.path model
 
 
 
@@ -200,27 +195,27 @@ type alias MarkdownParser msg =
 
 
 type alias Page msg =
-    MarkdownParser msg -> Model -> ( Maybe String, Html msg )
+    Model -> ( Maybe String, Html msg )
 
 
 home : Page msg
-home _ { spaces } =
-    ( Nothing, Dots.draw spaces.mainDots [ class "center" ] )
+home { spaces } =
+    ( Nothing, div [ class "tc" ] [ Dots.draw spaces.mainDots [] ] )
 
 
 notFound : Page msg
-notFound f _ =
-    ( Nothing, f Page.NotFound.content )
+notFound _ =
+    ( Nothing, Page.NotFound.content )
 
 
 about : Page msg
-about f _ =
-    ( Just "About", f Page.About.content )
+about _ =
+    ( Just "About", Page.About.content )
 
 
 works : Page msg
-works f _ =
-    ( Just "Works", f Page.Works.content )
+works _ =
+    ( Just "Works", Page.Works.content )
 
 
 
@@ -236,7 +231,7 @@ view { spaces } page =
                 [ Dots.draw spaces.dots [ class "absolute" ] ]
             ]
         , div
-            []
+            [ class "tl pb4 pl3 pr3 mw7 center" ]
             [ page
             ]
         ]

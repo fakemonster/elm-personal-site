@@ -1,13 +1,12 @@
 module Page.About exposing (content)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html exposing (Html)
 import Markdown
 
 
-content : String
+content : Html msg
 content =
-    """
+    Markdown.toHtml [] """
 ## about
 
 ### me (computers)

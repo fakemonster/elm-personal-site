@@ -1,13 +1,12 @@
 module Page.Works exposing (content)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html exposing (Html)
 import Markdown
 
 
-content : String
+content : Html msg
 content =
-    """
+    Markdown.toHtml [] """
 ## works
 
 Music to come! For now, here's a couple of open source projects I've worked on:
