@@ -273,8 +273,19 @@ wrappedView model =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions { spaces } =
+subscriptions { spaces, path } =
+    let
+        dots =
+            spaces.dots |> Dots.subscriptions |> Sub.map DotSpace
+
+        mainDots =
+            spaces.mainDots |> Dots.subscriptions |> Sub.map MainDotSpace
+    in
     Sub.batch
-        [ spaces.dots |> Dots.subscriptions |> Sub.map DotSpace
-        , spaces.mainDots |> Dots.subscriptions |> Sub.map MainDotSpace
-        ]
+        (case path of
+            "/" ->
+                [ dots, mainDots ]
+
+            _ ->
+                [ dots ]
+        )
