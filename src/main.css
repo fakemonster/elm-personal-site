@@ -79,3 +79,11 @@ blockquote > p {
   border-top: 2px solid transparent;
   border-bottom: 2px solid transparent;
 }
+
+.anchor-svg {
+  opacity: 0;
+}
+
+.anchor-link:hover .anchor-svg, .anchor-svg:hover {
+  opacity: 1;
+}

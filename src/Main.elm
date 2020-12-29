@@ -12,9 +12,10 @@ import Markdown
 import Page.About
 import Page.Home
 import Page.NotFound
-import Page.Works
+import Page.Projects
 import Result
 import Url
+import Url.Builder
 
 
 
@@ -151,7 +152,18 @@ update msg model =
         ClickedLink request ->
             case request of
                 Browser.Internal url ->
-                    ( model, Navigation.pushUrl model.key url.path )
+                    let
+                        handle =
+                            case url.fragment of
+                                Nothing ->
+                                    Navigation.pushUrl model.key
+
+                                Just _ ->
+                                    Navigation.load
+                    in
+                    ( model
+                    , handle (Url.toString url)
+                    )
 
                 _ ->
                     ( model, Cmd.none )
@@ -171,8 +183,8 @@ route_ path =
         "/about" ->
             about
 
-        "/works" ->
-            works
+        "/projects" ->
+            projects
 
         "/" ->
             home
@@ -213,9 +225,11 @@ about _ =
     ( Just "About", Page.About.content )
 
 
-works : Page msg
-works _ =
-    ( Just "Works", Page.Works.content )
+projects : Page msg
+projects _ =
+    ( Just "Projects"
+    , Page.Projects.content
+    )
 
 
 
