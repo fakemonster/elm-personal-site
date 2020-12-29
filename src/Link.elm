@@ -21,7 +21,7 @@ external { url, child, attrs } =
         ([ href url
          , target "_blank"
          , rel "noopener nofollow"
-         , class "pa1 link"
+         , class "link"
          ]
             ++ attrs
         )
@@ -32,17 +32,17 @@ internal : LinkConfig msg -> Html msg
 internal { url, child, attrs } =
     a
         ([ href url
-         , class "pa1 link"
+         , class "link"
          ]
             ++ attrs
         )
         [ child ]
 
 
-page : String -> Html msg
-page s =
+page : List (Attribute msg) -> String -> Html msg
+page attrs s =
     internal
         { child = text s
         , url = "/" ++ s
-        , attrs = []
+        , attrs = attrs
         }

@@ -19,7 +19,7 @@ logo =
                 ]
                 [ text "joe thel" ]
         , attrs =
-            [ class "link black logo"
+            [ class "pa1 black logo"
             , href "/"
             ]
         }
@@ -35,8 +35,8 @@ pages =
         [ flexList
         , class "f6 link page-links"
         ]
-        [ li [] [ Link.page "about" ]
-        , li [] [ Link.page "works" ]
+        [ li [] [ Link.page [ class "pa1" ] "about" ]
+        , li [] [ Link.page [ class "pa1" ] "projects" ]
         ]
 
 
@@ -49,14 +49,14 @@ links =
             [ Link.external
                 { url = "https://github.com/fakemonster"
                 , child = text "github"
-                , attrs = []
+                , attrs = [ class "pa1" ]
                 }
             ]
         , li []
             [ Link.external
                 { url = "https://linkedin.com/in/joe-thel"
                 , child = text "linkedin"
-                , attrs = []
+                , attrs = [ class "pa1" ]
                 }
             ]
         ]
