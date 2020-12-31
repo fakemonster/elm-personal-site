@@ -16,15 +16,18 @@ plainText el textContent =
 
 ytEmbed : String -> Html msg
 ytEmbed link =
-    iframe
-        [ width 560
-        , height 315
-        , src link
-        , attribute "frameborder" "0"
-        , attribute "allow" "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        , attribute "allowfullscreen" "true"
+    div
+        [ class "center overflow-hidden aspect-ratio aspect-ratio--16x9"
         ]
-        []
+        [ iframe
+            [ src link
+            , class "aspect-ratio--object"
+            , attribute "frameborder" "0"
+            , attribute "allow" "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            , attribute "allowfullscreen" "true"
+            ]
+            []
+        ]
 
 
 type alias Section msg =
