@@ -15,7 +15,7 @@ I'm a web engineer living in LA, currently working at Ticketmaster. I've worked 
 
 ### me (music)
 
-This is usually in the third person, but I'm an oboist, composer, and occasional singer. My work in all three is focused on the weirdness of performance, and what it feels like to watch that kind of fall apart (e.g. breaking an instrument, playing music that's impossible to "get right", doing one thing over and over again, or very slowly)
+I'm an oboist, composer, and occasional singer. My work in all three is focused on the weirdness of performance, and what it feels like to watch that kind of fall apart (e.g. breaking an instrument, playing music that's impossible to "get right", doing one thing over and over again, or very slowly)
 
 ### the site
 
