@@ -30,6 +30,25 @@ ytEmbed link =
         ]
 
 
+bcEmbed : String -> String -> Html msg
+bcEmbed playerLink pageLink =
+    iframe
+        [ src playerLink
+        , style "border" "0"
+        , style "height" "241px"
+        , style "width" "100%"
+        , attribute "seamless" "true"
+        ]
+        [ a
+            [ href pageLink ]
+            [ text "Poem Pieces by Joseph Thel" ]
+        ]
+
+
+
+{- <iframe style="" src="" seamless><a href="https://jthel.bandcamp.com/album/poem-pieces">Poem Pieces by Joseph Thel</a></iframe> -}
+
+
 type alias Section msg =
     List (Html msg)
 
@@ -100,6 +119,14 @@ rondo =
     ]
 
 
+poemPieces : Section msg
+poemPieces =
+    [ Link.lh4 "Poem Pieces"
+    , plainText p "An ultra-EP of my ongoing project to turn poetry into music; this is my way of getting involved in an art form for which I have tremendous love and inability."
+    , bcEmbed "https://bandcamp.com/EmbeddedPlayer/album=4110281240/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/" "https://jthel.bandcamp.com/album/poem-pieces"
+    ]
+
+
 content : Html msg
 content =
     div
@@ -110,6 +137,7 @@ content =
         , item brom
         , item sand
         , Link.lh3 "Music"
-        , plainText p "Plenty of these have scores; feel free to reach out for a copy."
+        , plainText p "Feel free to reach out for a copy of a score to any of these works."
         , item rondo
+        , item poemPieces
         ]
