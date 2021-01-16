@@ -111,6 +111,35 @@ sand =
     ]
 
 
+this : Section msg
+this =
+    [ Link.lh4 "This site"
+    , linksList
+        [ ( "https://github.com/fakemonster/elm-personal-site", "source" ) ]
+    , plainText p "This site is built in Elm (hence the JS requirement). Elm is quite nice! Probably the biggest nuisances I encountered were:"
+    , ol
+        []
+        [ plainText li "it really is pure, so effects are managed exclusively by the runtime. This means you have to colocate all your state in one place, which gets a little hairy when you want to have an isolated state that you could (theoretically) duplicate"
+        , li
+            []
+            [ text "due to the lack of typeclasses, I had to put up a bit of a fight to get a sane page architecture going. If you were to do something like this web app in Haskell, probably your first bet would be for each page to `implement Page`, where here you instead define a `Page` type that's a union of each page's unique constructor. It was pretty ugly originally, but I came across Richard Feldman's "
+            , Link.external
+                { url = "https://github.com/rtfeldman/elm-spa-example"
+                , child = text "elm SPA example"
+                , attrs = []
+                }
+            , text " which proved to solve the problem more nicely."
+            ]
+        ]
+    , p
+        []
+        [ text "All said, it's been excellent to work with. I get to have 100% confidence in every refactor, which I'd generally given up on in frontends! And algebraic types are particularly nice when making UI, where you have a lot of things that are "
+        , em [] [ text "nearly" ]
+        , text " identical."
+        ]
+    ]
+
+
 rondo : Section msg
 rondo =
     [ Link.lh4 "Rondo for Strings and Pegs"
@@ -136,6 +165,7 @@ content =
         , Link.lh3 "Software"
         , item brom
         , item sand
+        , item this
         , Link.lh3 "Music"
         , plainText p "Feel free to reach out for a copy of a score to any of these works."
         , item rondo
