@@ -95,7 +95,12 @@ anchorize render content =
             , href (toAnchorFrag content)
             , id (toAnchorName content)
             ]
-            [ img [ class "w1 h1 ma0 mr2 ml2", src "/svg/link.svg" ] []
+            [ img
+                [ class "w1 h1 ma0 mr2 ml2"
+                , src "/svg/link.svg"
+                , alt ("link to " ++ content)
+                ]
+                []
             ]
         , text content
         ]

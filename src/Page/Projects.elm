@@ -14,13 +14,19 @@ plainText el textContent =
     el [] [ text textContent ]
 
 
-ytEmbed : String -> Html msg
-ytEmbed link =
+byLine : String -> String
+byLine s =
+    s ++ " by Joe Thel"
+
+
+ytEmbed : String -> String -> Html msg
+ytEmbed videoName link =
     div
         [ class "center overflow-hidden aspect-ratio aspect-ratio--16x9"
         ]
         [ iframe
             [ src link
+            , byLine videoName |> title
             , class "aspect-ratio--object"
             , attribute "frameborder" "0"
             , attribute "allow" "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -30,10 +36,11 @@ ytEmbed link =
         ]
 
 
-bcEmbed : String -> String -> Html msg
-bcEmbed playerLink pageLink =
+bcEmbed : String -> String -> String -> Html msg
+bcEmbed albumTitle playerLink pageLink =
     iframe
         [ src playerLink
+        , byLine albumTitle |> title
         , style "border" "0"
         , style "height" "241px"
         , style "width" "100%"
@@ -41,7 +48,7 @@ bcEmbed playerLink pageLink =
         ]
         [ a
             [ href pageLink ]
-            [ text "Poem Pieces by Joseph Thel" ]
+            [ byLine albumTitle |> text ]
         ]
 
 
@@ -144,7 +151,7 @@ rondo : Section msg
 rondo =
     [ Link.lh4 "Rondo for Strings and Pegs"
     , plainText p "A tuning piece for solo guitar. Very very peaceful, except it breaks all six strings. An excerpt below:"
-    , ytEmbed "https://www.youtube.com/embed/ev-eo7x5nf8"
+    , ytEmbed "Rondo for Strings and Pegs" "https://www.youtube.com/embed/ev-eo7x5nf8"
     ]
 
 
@@ -152,7 +159,7 @@ poemPieces : Section msg
 poemPieces =
     [ Link.lh4 "Poem Pieces"
     , plainText p "An ultra-EP of my ongoing project to turn poetry into music; this is my way of getting involved in an art form for which I have tremendous love and inability."
-    , bcEmbed "https://bandcamp.com/EmbeddedPlayer/album=4110281240/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/" "https://jthel.bandcamp.com/album/poem-pieces"
+    , bcEmbed "Poem Pieces" "https://bandcamp.com/EmbeddedPlayer/album=4110281240/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/" "https://jthel.bandcamp.com/album/poem-pieces"
     ]
 
 
