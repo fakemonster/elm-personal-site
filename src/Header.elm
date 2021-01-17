@@ -35,8 +35,8 @@ pages =
         [ flexList
         , class "f6 link page-links"
         ]
-        [ li [] [ Link.page [ class "pa1" ] "about" ]
-        , li [] [ Link.page [ class "pa1" ] "projects" ]
+        [ li [] [ Link.page [ class "ph1 pv3" ] "about" ]
+        , li [] [ Link.page [ class "ph1 pv3" ] "projects" ]
         ]
 
 
@@ -49,14 +49,14 @@ links =
             [ Link.external
                 { url = "https://github.com/fakemonster"
                 , child = text "github"
-                , attrs = [ class "pa1" ]
+                , attrs = [ class "ph1 pv3" ]
                 }
             ]
         , li []
             [ Link.external
                 { url = "https://linkedin.com/in/joe-thel"
                 , child = text "linkedin"
-                , attrs = [ class "pa1" ]
+                , attrs = [ class "ph1 pv3" ]
                 }
             ]
         ]
