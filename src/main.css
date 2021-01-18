@@ -84,6 +84,9 @@ blockquote > p {
   opacity: 0;
 }
 
-.anchor-link:hover .anchor-svg, .anchor-svg:hover {
+.anchor-link:hover .anchor-svg
+, .anchor-link:focus .anchor-svg
+, .anchor-svg:hover
+, .anchor-svg:focus {
   opacity: 1;
 }
