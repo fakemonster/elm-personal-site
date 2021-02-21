@@ -147,6 +147,17 @@ this =
     ]
 
 
+heelies : Section msg
+heelies =
+    [ Link.lh4 "Stardew Valley Heelies Mod"
+    , linksList
+        [ ( "https://www.nexusmods.com/stardewvalley/mods/7751", "download" )
+        , ( "https://github.com/fakemonster/stardew-valley-heelies", "source" )
+        ]
+    , plainText p "Not exactly a crowning technical achievement, but was fun to do a bit of C#! SV is one of my all-time favorite games, so it felt great to contribute a little bit to the experience."
+    ]
+
+
 rondo : Section msg
 rondo =
     [ Link.lh4 "Rondo for Strings and Pegs"
@@ -158,9 +169,14 @@ rondo =
 poemPieces : Section msg
 poemPieces =
     [ Link.lh4 "Poem Pieces"
-    , plainText p "An ultra-EP of my ongoing project to turn poetry into music; this is my way of getting involved in an art form for which I have tremendous love and inability."
+    , plainText p "An ultra-EP of my ongoing project to turn poetry into music; this is my way of getting involved in an art form for which I have great love and inability."
     , bcEmbed "Poem Pieces" "https://bandcamp.com/EmbeddedPlayer/album=4110281240/size=large/bgcol=ffffff/linkcol=0687f5/artwork=small/transparent=true/" "https://jthel.bandcamp.com/album/poem-pieces"
     ]
+
+
+spacedH3 : String -> Html msg
+spacedH3 =
+    Link.anchorize (\attrs children -> h3 (class "mt5" :: attrs) children)
 
 
 content : Html msg
@@ -169,11 +185,12 @@ content =
         [ class "tl pb4 pl3 pr3 mw7 center" ]
         [ plainText h2 "projects"
         , intro
-        , Link.lh3 "Software"
+        , spacedH3 "Software"
         , item brom
         , item sand
         , item this
-        , Link.lh3 "Music"
+        , item heelies
+        , spacedH3 "Music"
         , plainText p "Feel free to reach out for a copy of a score to any of these works."
         , item rondo
         , item poemPieces

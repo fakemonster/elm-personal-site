@@ -1,5 +1,6 @@
 module Link exposing
     ( anchor
+    , anchorize
     , external
     , internal
     , lh2
@@ -75,6 +76,7 @@ toAnchorName : String -> String
 toAnchorName =
     String.cons '_'
         << String.replace "_" "-"
+        << String.replace " " "-"
         << String.filter isAsciiPrintable
 
 
